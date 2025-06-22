@@ -1,53 +1,93 @@
-# Coin Detection
+# Coin Detection Project
 
 ## About The Project
 
-This project involves developing a Python pipeline to detect and outline coins in images using computer vision techniques. The pipeline implements various image processing methods including greyscale conversion, edge detection, blurring, thresholding, morphological operations, connected component analysis, and bounding box detection.
+This project implements a comprehensive computer vision pipeline for detecting and classifying coins in digital images. The system uses advanced image processing techniques to automatically identify, locate, and classify different coin denominations. Two versions are provided: a base detection system and an enhanced version with coin classification capabilities.
 
-The system is designed to automatically identify and locate coins in digital images, making it useful for applications such as automated counting systems or inventory management.
+The pipeline processes images through multiple stages including greyscale conversion, edge detection, noise reduction, morphological operations, and connected component analysis to accurately detect circular coin objects and draw bounding boxes around them.
 
-## Project Steps
+## Features
 
-### 1. Convert to Greyscale and Normalize
-- **Convert to Greyscale**: Transform RGB images to greyscale using the standard luminance formula (0.3 × Red + 0.6 × Green + 0.1 × Blue)
-- **Contrast Stretching**: Normalize pixel values to the full 0-255 range using percentile-based stretching
+### Base Version
+- **Coin Detection**: Automatically detects circular coin objects in images
+- **Edge Detection**: Uses Scharr filters for robust edge detection
+- **Morphological Processing**: Applies dilation and erosion for noise reduction
+- **Bounding Box Generation**: Creates precise rectangular boundaries around detected coins
+- **Size Filtering**: Filters out small artifacts using minimum area thresholds
 
-### 2. Edge Detection
-- **Scharr Filter**: Apply 3×3 Scharr filters in both horizontal and vertical directions
-- **Edge Strength**: Calculate edge magnitude by combining horizontal and vertical edge responses
+### Extension Version
+- **All Base Features**: Includes everything from the base version
+- **Coin Classification**: Identifies specific coin denominations (10¢, 20¢, 50¢, $1, $2)
+- **Circularity Validation**: Validates detected objects are circular using area-to-radius ratios
+- **Enhanced Edge Detection**: Uses Laplacian filters for improved edge detection
+- **Visual Annotations**: Displays coin types and total count on output images
+- **Improved Processing Order**: Optimized erosion-then-dilation sequence for better results
 
-### 3. Image Blurring
-- **Mean Filter**: Apply 5×5 mean filtering to reduce noise and smooth the image
-- **Multiple Passes**: Perform filtering operations sequentially to enhance results
+## Technical Implementation
 
-### 4. Threshold the Image
-- **Binary Segmentation**: Convert the processed image to binary format using optimal threshold values
-- **Foreground/Background Separation**: Isolate coin regions from the background
+### Image Processing Pipeline
 
-### 5. Morphological Operations
-- **Erosion and Dilation**: Apply morphological operations using circular 5×5 kernels
-- **Noise Reduction**: Remove small artifacts and fill gaps in detected regions
+#### 1. Preprocessing
+- **RGB to Greyscale Conversion**: Uses weighted formula (0.3R + 0.6G + 0.1B)
+- **Contrast Enhancement**: Percentile-based mapping for improved contrast (base version only)
 
-### 6. Connected Component Analysis
-- **Component Detection**: Identify separate connected regions in the binary image
-- **Region Labeling**: Label each distinct coin region for individual processing
+#### 2. Edge Detection
+- **Base Version**: Scharr horizontal and vertical edge filters with magnitude calculation
+- **Extension Version**: Laplacian filter for enhanced edge detection with absolute value conversion
 
-### 7. Bounding Box Detection
-- **Coordinate Extraction**: Determine minimum and maximum x,y coordinates for each detected coin
-- **Box Drawing**: Generate bounding rectangles around identified coin regions
+#### 3. Noise Reduction
+- **Mean Blurring**: 5×5 kernel applied multiple times for smooth results
+- **Adaptive Iterations**: 3 iterations (base) / 2 iterations (extension) for optimal smoothing
 
-## How to Run
+#### 4. Segmentation
+- **Binary Thresholding**: Converts processed images to binary format
+- **Threshold Values**: 22 (base) / 20 (extension) for optimal separation
 
-To run this project, follow these steps:
+#### 5. Morphological Operations
+- **Kernel Design**: Custom 5×5 circular kernel for coin-like shapes
+- **Base Version**: 4 dilations followed by 4 erosions
+- **Extension Version**: 4 erosions followed by 4 dilations (improved sequence)
 
-1. **Install Python 3.x**: Download from [python.org](https://www.python.org/)
+#### 6. Object Analysis
+- **Connected Component Labeling**: BFS algorithm for region identification
+- **Size Filtering**: Minimum 10,000 pixels to eliminate small artifacts
+- **Circularity Check**: Area validation against expected circular area (extension only)
 
-2. **Install Required Libraries**:
+#### 7. Classification (Extension Only)
+Coin classification based on pixel area:
+- **10 Cent**: < 39,000 pixels
+- **20 Cent**: 39,000-41,000 pixels  
+- **1 Dollar**: 41,000-45,000 pixels
+- **50 Cent**: 45,000-54,000 pixels
+- **2 Dollar**: 54,000-100,000 pixels
+- **Unknown**: > 100,000 pixels
+
+## Installation & Setup
+
+### Prerequisites
+- Python 3.7 or higher
+- Required libraries: `matplotlib`
+
+### Installation Steps
+
+1. **Clone or download the project files**
+
+2. **Install required dependencies**:
    ```bash
-   pip install matplotlib numpy
+   pip install matplotlib
    ```
 
-3. **Run the Pipeline**:
-   ```bash
-   python coin_detection.py input_image.jpg
-   ```
+3. **Verify directory structure**:
+   Ensure the `imageIO` folder and PNG reader library are present
+
+## Usage
+
+### Base Version
+```bash
+python coin_detection_base.py
+```
+
+### Extension Version  
+```bash
+python coin_detection_extended.py
+```
