@@ -1,4 +1,4 @@
-# Coin Detection Pipeline
+# Coin Detection
 
 ## About The Project
 
